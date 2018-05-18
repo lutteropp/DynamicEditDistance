@@ -78,12 +78,12 @@ int DynProg::editDistance(const DistConfig& conf) {
 	int e = 0;
 	if (m <= n) { // iterate over i in D[i,n]
 		e = n * conf.insertion_penalty;
-		for (int i = 2; i <= m; ++i) {
+		for (int i = 1; i <= m; ++i) {
 			e += dr[ { i - 1, n }].u;
 		}
 	} else { // iterate over j in D[m,j]
 		e = m * conf.deletion_penalty;
-		for (int j = 2; j <= n; ++j) {
+		for (int j = 1; j <= n; ++j) {
 			e += dr[ { m, j - 1 }].l;
 		}
 	}
