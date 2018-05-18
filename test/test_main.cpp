@@ -125,7 +125,7 @@ int classicalEditDist(const std::string& s1, const std::string& s2, const DistCo
 	// fill it
 	for (size_t i = 1; i < nrows; ++i) {
 		for (size_t j = 1; j < ncols; ++j) {
-			int score = (s1[i] == s2[j]) ? 0 : config.substitution_penalty;
+			int score = (s1[i-1] == s2[j-1]) ? 0 : config.substitution_penalty;
 			matrix[i][j] = std::min(matrix[i - 1][j - 1] + score,
 					std::min(matrix[i - 1][j] + config.deletion_penalty, matrix[i][j - 1] + config.insertion_penalty));
 		}
@@ -242,7 +242,11 @@ TEST(DynProg, problem) {
 }
 
 TEST(DynProg, random) {
+
 	DistConfig config;
+
+	std::cout << "MIAUUUU: " << classicalEditDist("A", "T", config) << "\n";
+
 	std::string s1 = "";
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
