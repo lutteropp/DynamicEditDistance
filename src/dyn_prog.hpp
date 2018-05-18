@@ -44,7 +44,7 @@ private:
 };
 
 void DynProg::dpIteration(int i, int j, const DistConfig& conf) {
-	int sub = (a[i] == b[j] ? 0 : conf.substitution_penalty);
+	int sub = (a[i-1] == b[j-1] ? 0 : conf.substitution_penalty);
 	int z = std::min(
 			std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty), sub);
 	dr[ { i, j }].u = z - dr[ { i - 1, j }].l;
@@ -53,6 +53,8 @@ void DynProg::dpIteration(int i, int j, const DistConfig& conf) {
 
 DynProg::DynProg(const std::string& a, const std::string& b, const DistConfig& conf) {
 	// compute the initial delta values...
+	this->a = a;
+	this->b = b;
 	m = a.size();
 	n = b.size();
 	for (int i = 1; i <= m; ++i) {
@@ -61,15 +63,12 @@ DynProg::DynProg(const std::string& a, const std::string& b, const DistConfig& c
 	for (int j = 1; j <= n; ++j) {
 		dr[ { 0, j }].l = conf.insertion_penalty;
 	}
-	dr.printMatrix();
 	for (int i = 1; i <= m; ++i) {
 		for (int j = 1; j <= n; ++j) {
 			dpIteration(i, j, conf);
 		}
 	}
 	dr.printMatrix();
-	this->a = a;
-	this->b = b;
 	rowShift = 0;
 	colShift = 0;
 }
@@ -79,12 +78,12 @@ int DynProg::editDistance(const DistConfig& conf) {
 	if (m <= n) { // iterate over i in D[i,n]
 		e = n * conf.insertion_penalty;
 		for (int i = 1; i <= m; ++i) {
-			e += dr[ { i - 1, n }].u;
+			e += dr[ { i, n }].u;
 		}
 	} else { // iterate over j in D[m,j]
 		e = m * conf.deletion_penalty;
 		for (int j = 1; j <= n; ++j) {
-			e += dr[ { m, j - 1 }].l;
+			e += dr[ { m, j}].l;
 		}
 	}
 	return e;
