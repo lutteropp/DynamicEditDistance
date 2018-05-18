@@ -110,7 +110,7 @@ void DynProg::addCharBRight(char c, const DistConfig& conf) {
 	b += c;
 	dr.setMaxColIdx(dr.getMaxColIdx() + 1);
 	dr[ { dr.getMinRowIdx(), dr.getMaxColIdx() }].l = conf.insertion_penalty;
-	for (int i = dr.getMaxRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
+	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
 		dpIteration(i, dr.getMaxColIdx(), conf);
 	}
 }
