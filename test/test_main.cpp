@@ -215,21 +215,30 @@ TEST(DynProg, problem) {
 	dp.printLMatrix();
 	dp.printUMatrix();
 	EXPECT_EQ(dp.editDistance(config), 0);
-	s2 = "G" + s2;
-	dp.addCharBLeft('G', config);
+	// C, -
+	s1 = "C" + s1;
+	dp.addCharALeft('C', config);
 	dp.printLMatrix();
 	dp.printUMatrix();
 	EXPECT_EQ(dp.editDistance(config), 1);
-	s2 = "T" + s2;
-	dp.addCharBLeft('T', config);
-	dp.printLMatrix();
-	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 2);
+	// GC, -
 	s1 = "G" + s1;
 	dp.addCharALeft('G', config);
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(config), 2);
+	// AGC, -
+	s1 = "A" + s1;
+	dp.addCharALeft('A', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 3);
+	// AGC, C
+	s2 = "C" + s2;
+	dp.addCharBLeft('C', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 2);
 }
 
 TEST(DynProg, random) {

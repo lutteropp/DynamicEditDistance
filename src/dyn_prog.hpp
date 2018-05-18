@@ -90,7 +90,7 @@ int DynProg::editDistance(const DistConfig& conf) {
 		}
 	} else { // iterate over j in D[m,j]
 		e = (dr.getNRows() - 1) * conf.deletion_penalty;
-		for (int j = 1; j <= dr.getMaxColIdx(); ++j) {
+		for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
 			e += dr[ { dr.getMaxRowIdx(), j }].l;
 		}
 	}
