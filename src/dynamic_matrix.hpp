@@ -18,9 +18,11 @@ class DynamicMatrix {
 public:
 	DynamicMatrix() {
 		nrows = 0;
-		internalRowOffset = 0;
 		ncols = 0;
-		internalColOffset = 0;
+		minRowIdx = 0;
+		minColIdx = 0;
+		maxRowIdx = -1;
+		maxColIdx = -1;
 		externalRowOffset = 0;
 		externalColOffset = 0;
 	}
@@ -28,39 +30,36 @@ public:
 		int i = idx[0] - externalRowOffset;
 		int j = idx[1] - externalColOffset;
 
-		while (i + internalRowOffset >= nrows) {
+		while (i > maxRowIdx) {
 			std::deque<T> newRow(ncols);
 			rows.push_back(newRow);
 			nrows++;
+			maxRowIdx++;
 		}
-		while (i <= -1 * internalRowOffset) {
+		while (i < minRowIdx) {
 			std::deque<T> newRow(ncols);
 			rows.push_front(newRow);
 			nrows++;
+			minRowIdx--;
 		}
-		while (j + internalColOffset >= ncols) { // TODO: THIS CHECK IS WRONG!!!
+		while (j > maxColIdx) {
 			for (int i1 = 0; i1 < nrows; ++i1) {
 				T newEntry = 0;
 				rows[i1].push_back(newEntry);
 			}
 			ncols++;
+			maxColIdx++;
 		}
-		while (j <= -1 * internalColOffset) { // TODO: THIS CHECK IS WRONG!!!
+		while (j < minColIdx) {
 			for (int i1 = 0; i1 < nrows; ++i1) {
 				T newEntry = 0;
 				rows[i1].push_front(newEntry);
 			}
 			ncols++;
+			minColIdx--;
 		}
 
-		if (i < 0) {
-			internalRowOffset = std::max(internalRowOffset, -1 * i);
-		}
-		if (j < 0) {
-			internalColOffset = std::max(internalColOffset, -1 * j);
-		}
-
-		return rows[i + internalRowOffset][j + internalColOffset];
+		return rows[i - minRowIdx][j - minColIdx];
 	}
 	int getNRows() {
 		return nrows;
@@ -86,8 +85,10 @@ private:
 	std::deque<std::deque<T> > rows;
 	int nrows;
 	int ncols;
-	int internalRowOffset;
-	int internalColOffset;
+	int minRowIdx;
+	int minColIdx;
+	int maxColIdx;
+	int maxRowIdx;
 	int externalRowOffset;
 	int externalColOffset;
 };
