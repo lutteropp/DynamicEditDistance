@@ -6,9 +6,14 @@
  */
 
 #pragma once
+#include <iostream>
 
 class MatrixEntry {
 public:
 	int l;
 	int u;
+	friend std::ostream& operator<<(std::ostream& os, const MatrixEntry& dt) {
+		os << "(" << dt.l << "," << dt.u << ")";
+		return os;
+	}
 };
