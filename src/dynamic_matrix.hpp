@@ -24,42 +24,10 @@ public:
 		minColIdx = 0;
 		maxRowIdx = -1;
 		maxColIdx = -1;
-		externalRowOffset = 0;
-		externalColOffset = 0;
 	}
 	T& operator [](std::array<int, 2> idx) {
-		int i = idx[0] - externalRowOffset;
-		int j = idx[1] - externalColOffset;
-
-		while (i > maxRowIdx) {
-			std::deque<T> newRow(ncols);
-			rows.push_back(newRow);
-			nrows++;
-			maxRowIdx++;
-		}
-		while (i < minRowIdx) {
-			std::deque<T> newRow(ncols);
-			rows.push_front(newRow);
-			nrows++;
-			minRowIdx--;
-		}
-		while (j > maxColIdx) {
-			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry;
-				rows[i1].push_back(newEntry);
-			}
-			ncols++;
-			maxColIdx++;
-		}
-		while (j < minColIdx) {
-			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry;
-				rows[i1].push_front(newEntry);
-			}
-			ncols++;
-			minColIdx--;
-		}
-
+		int i = idx[0];
+		int j = idx[1];
 		return rows[i - minRowIdx][j - minColIdx];
 	}
 	int getNRows() {
@@ -68,18 +36,60 @@ public:
 	int getNCols() {
 		return ncols;
 	}
-	void setExternalRowOffset(int offset) {
-		externalRowOffset = offset;
-	}
-	void setExternalColOffset(int offset) {
-		externalColOffset = offset;
-	}
 	void printMatrix() {
 		for (int i = 0; i < nrows; ++i) {
 			for (int j = 0; j < ncols; ++j) {
 				std::cout << rows[i][j] << " ";
 			}
 			std::cout << "\n";
+		}
+	}
+	int getMinRowIdx() {
+		return minRowIdx;
+	}
+	int getMinColIdx() {
+		return minColIdx;
+	}
+	int getMaxRowIdx() {
+		return maxRowIdx;
+	}
+	int getMaxColIdx() {
+		return maxColIdx;
+	}
+	void setMinRowIdx(int val) {
+		while (val < minRowIdx) {
+			std::deque<T> newRow(ncols);
+			rows.push_front(newRow);
+			nrows++;
+			minRowIdx--;
+		}
+	}
+	void setMinColIdx(int val) {
+		while (val < minColIdx) {
+			for (int i1 = 0; i1 < nrows; ++i1) {
+				T newEntry;
+				rows[i1].push_front(newEntry);
+			}
+			ncols++;
+			minColIdx--;
+		}
+	}
+	void setMaxRowIdx(int val) {
+		while (val > maxRowIdx) {
+			std::deque<T> newRow(ncols);
+			rows.push_back(newRow);
+			nrows++;
+			maxRowIdx++;
+		}
+	}
+	void setMaxColIdx(int val) {
+		while (val > maxColIdx) {
+			for (int i1 = 0; i1 < nrows; ++i1) {
+				T newEntry;
+				rows[i1].push_back(newEntry);
+			}
+			ncols++;
+			maxColIdx++;
 		}
 	}
 private:
@@ -90,6 +100,4 @@ private:
 	int minColIdx;
 	int maxColIdx;
 	int maxRowIdx;
-	int externalRowOffset;
-	int externalColOffset;
 };
