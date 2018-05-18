@@ -12,6 +12,7 @@
 #include <iostream>
 
 // this allows both positive and negative indices
+// this matrix only grows, but never shrinks!
 
 template<typename T>
 class DynamicMatrix {
@@ -44,7 +45,7 @@ public:
 		}
 		while (j > maxColIdx) {
 			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry = 0;
+				T newEntry;
 				rows[i1].push_back(newEntry);
 			}
 			ncols++;
@@ -52,7 +53,7 @@ public:
 		}
 		while (j < minColIdx) {
 			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry = 0;
+				T newEntry;
 				rows[i1].push_front(newEntry);
 			}
 			ncols++;
