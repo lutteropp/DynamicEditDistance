@@ -242,19 +242,13 @@ TEST(DynProg, problem) {
 }
 
 TEST(DynProg, random) {
-
 	DistConfig config;
-
-	std::cout << "MIAUUUU: " << classicalEditDist("A", "T", config) << "\n";
-
 	std::string s1 = "";
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
 	std::mt19937 rng;
 	rng.seed(std::random_device()());
 	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
-	std::cout << "s1: " << s1 << "\n";
-	std::cout << "s2: " << s2 << "\n";
 	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	for (size_t i = 0; i < 200; ++i) {
 		int rand = dist4(rng);
@@ -274,8 +268,37 @@ TEST(DynProg, random) {
 			s2 = randomDNA(1) + s2;
 			dp.addCharBLeft(s2[0], config);
 		}
-		std::cout << "s1: " << s1 << "\n";
-		std::cout << "s2: " << s2 << "\n";
+		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+	}
+}
+
+TEST(DynProg, randomWeighted) {
+	DistConfig config(1,2,3);
+	std::string s1 = "";
+	std::string s2 = "";
+	DynProg dp(s1, s2, config);
+	std::mt19937 rng;
+	rng.seed(std::random_device()());
+	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
+	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+	for (size_t i = 0; i < 200; ++i) {
+		int rand = dist4(rng);
+		if (rand < 2) {
+			rand += 2; // enforce left adding
+		}
+		if (rand == 0) {
+			s1 = s1 + randomNuc();
+			dp.addCharARight(s1[s1.size() - 1], config);
+		} else if (rand == 1) {
+			s2 = s2 + randomNuc();
+			dp.addCharBRight(s2[s2.size() - 1], config);
+		} else if (rand == 2) {
+			s1 = randomDNA(1) + s1;
+			dp.addCharALeft(s1[0], config);
+		} else {
+			s2 = randomDNA(1) + s2;
+			dp.addCharBLeft(s2[0], config);
+		}
 		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	}
 }
