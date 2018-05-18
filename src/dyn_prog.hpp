@@ -83,13 +83,13 @@ int DynProg::editDistance(const DistConfig& conf) {
 	}
 
 	int e = 0;
-	if (dr.getMaxRowIdx() <= dr.getMaxColIdx()) { // iterate over i in D[i,n]
-		e = dr.getMaxColIdx() * conf.insertion_penalty;
+	if (dr.getNRows() <= dr.getNCols()) { // iterate over i in D[i,n]
+		e = (dr.getNCols() - 1) * conf.insertion_penalty;
 		for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
 			e += dr[ { i, dr.getMaxColIdx() }].u;
 		}
 	} else { // iterate over j in D[m,j]
-		e = dr.getMaxRowIdx() * conf.deletion_penalty;
+		e = (dr.getNRows() - 1) * conf.deletion_penalty;
 		for (int j = 1; j <= dr.getMaxColIdx(); ++j) {
 			e += dr[ { dr.getMaxRowIdx(), j }].l;
 		}
@@ -257,8 +257,8 @@ void DynProg::removeCharBLeft(const DistConfig& conf) {
 
 void DynProg::printUMatrix() {
 	std::cout << "U matrix begin:\n";
-	for (int i = dr.getMinRowIdx(); i <= dr.getMaxRowIdx(); ++i) {
-		for (int j = dr.getMinColIdx(); j <= dr.getMaxColIdx(); ++j) {
+	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
+		for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
 			std::cout << dr[ { i, j }].u << " ";
 		}
 		std::cout << "\n";
@@ -268,8 +268,8 @@ void DynProg::printUMatrix() {
 
 void DynProg::printLMatrix() {
 	std::cout << "L matrix begin:\n";
-	for (int i = dr.getMaxRowIdx(); i <= dr.getMaxRowIdx(); ++i) {
-		for (int j = dr.getMinColIdx(); j <= dr.getMaxColIdx(); ++j) {
+	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
+		for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
 			std::cout << dr[ { i, j }].l << " ";
 		}
 		std::cout << "\n";

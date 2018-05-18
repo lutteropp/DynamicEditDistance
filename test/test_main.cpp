@@ -173,7 +173,7 @@ TEST(DynProg, oneEqOneDiff) {
 	EXPECT_EQ(dp.editDistance(config), 1);
 }
 
-TEST(DynProg, singleLeftAdd) {
+TEST(DynProg, singleLeftAddDifferent) {
 	DistConfig config;
 	std::string s1 = "";
 	std::string s2 = "";
@@ -184,6 +184,47 @@ TEST(DynProg, singleLeftAdd) {
 	EXPECT_EQ(dp.editDistance(config), 1);
 	s2 = "G" + s2;
 	dp.addCharBLeft('G', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 1);
+}
+
+TEST(DynProg, singleLeftAddEqual) {
+	DistConfig config;
+	std::string s1 = "";
+	std::string s2 = "";
+	DynProg dp(s1, s2, config);
+	EXPECT_EQ(dp.editDistance(config), 0);
+	s1 = "A" + s1;
+	dp.addCharALeft('A', config);
+	EXPECT_EQ(dp.editDistance(config), 1);
+	s2 = "A" + s2;
+	dp.addCharBLeft('A', config);
+	EXPECT_EQ(dp.editDistance(config), 0);
+}
+
+TEST(DynProg, problem) {
+	DistConfig config;
+	std::string s1 = "";
+	std::string s2 = "";
+	DynProg dp(s1, s2, config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 0);
+	s2 = "G" + s2;
+	dp.addCharBLeft('G', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 1);
+	s2 = "T" + s2;
+	dp.addCharBLeft('T', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
+	EXPECT_EQ(dp.editDistance(config), 2);
+	s1 = "G" + s1;
+	dp.addCharALeft('G', config);
+	dp.printLMatrix();
+	dp.printUMatrix();
 	EXPECT_EQ(dp.editDistance(config), 1);
 }
 
