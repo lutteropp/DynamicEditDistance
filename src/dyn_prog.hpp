@@ -130,6 +130,8 @@ void DynProg::updateDrColwise(const DistConfig& conf) {
 		dr[ { i, dr.getMinColIdx() }].u = conf.deletion_penalty;
 		prevChanged.push_back(i);
 	}
+	// set the missing L value
+	dr[{dr.getMinRowIdx(), dr.getMinColIdx() + 1}].l = conf.insertion_penalty;
 
 	// go column by column
 	for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
@@ -150,6 +152,8 @@ void DynProg::updateDrColwise(const DistConfig& conf) {
 			int z = std::min(
 					std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty),
 					sub);
+			//std::cout << "L[" << i-1 << "," << j << "] = " << dr[{i-1,j}].l << "\n";
+			//std::cout << "U[" << i << "," << j-1 << "] = " << dr[{i,j-1}].u << "\n";
 			int newU = z - dr[ { i - 1, j }].l;
 			int newL = z - dr[ { i, j - 1 }].u;
 			dr[ { i, j }].u = newU;
@@ -177,6 +181,9 @@ void DynProg::updateDrRowwise(const DistConfig& conf) {
 		dr[ { dr.getMinRowIdx(), j }].l = conf.insertion_penalty;
 		prevChanged.push_back(j);
 	}
+
+	// set the missing U value
+	dr[{dr.getMinRowIdx() + 1, dr.getMinColIdx()}].u = conf.deletion_penalty;
 
 	//go row by row
 	for (int i = 1 + dr.getMinRowIdx(); i <= dr.getMaxRowIdx(); ++i) {
