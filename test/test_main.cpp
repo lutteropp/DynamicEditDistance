@@ -125,7 +125,7 @@ int classicalEditDist(const std::string& s1, const std::string& s2, const DistCo
 	// fill it
 	for (size_t i = 1; i < nrows; ++i) {
 		for (size_t j = 1; j < ncols; ++j) {
-			int score = (s1[i-1] == s2[j-1]) ? 0 : config.substitution_penalty;
+			int score = (s1[i - 1] == s2[j - 1]) ? 0 : config.substitution_penalty;
 			matrix[i][j] = std::min(matrix[i - 1][j - 1] + score,
 					std::min(matrix[i - 1][j] + config.deletion_penalty, matrix[i][j - 1] + config.insertion_penalty));
 		}
@@ -249,12 +249,11 @@ TEST(DynProg, random) {
 	std::mt19937 rng;
 	rng.seed(std::random_device()());
 	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
+	std::cout << "s1: " << s1 << "\n";
+	std::cout << "s2: " << s2 << "\n";
 	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	for (size_t i = 0; i < 200; ++i) {
 		int rand = dist4(rng);
-		if (rand < 2) {
-			rand += 2; // enforce left adding
-		}
 		if (rand == 0) {
 			s1 = s1 + randomNuc();
 			dp.addCharARight(s1[s1.size() - 1], config);
@@ -268,24 +267,25 @@ TEST(DynProg, random) {
 			s2 = randomDNA(1) + s2;
 			dp.addCharBLeft(s2[0], config);
 		}
+		std::cout << "s1: " << s1 << "\n";
+		std::cout << "s2: " << s2 << "\n";
 		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	}
 }
 
 TEST(DynProg, randomWeighted) {
-	DistConfig config(1,2,3);
+	DistConfig config(1, 2, 3);
 	std::string s1 = "";
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
 	std::mt19937 rng;
 	rng.seed(std::random_device()());
 	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
+	std::cout << "s1: " << s1 << "\n";
+	std::cout << "s2: " << s2 << "\n";
 	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	for (size_t i = 0; i < 200; ++i) {
 		int rand = dist4(rng);
-		if (rand < 2) {
-			rand += 2; // enforce left adding
-		}
 		if (rand == 0) {
 			s1 = s1 + randomNuc();
 			dp.addCharARight(s1[s1.size() - 1], config);
@@ -299,6 +299,8 @@ TEST(DynProg, randomWeighted) {
 			s2 = randomDNA(1) + s2;
 			dp.addCharBLeft(s2[0], config);
 		}
+		std::cout << "s1: " << s1 << "\n";
+		std::cout << "s2: " << s2 << "\n";
 		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
 	}
 }
