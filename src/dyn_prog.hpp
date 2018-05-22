@@ -43,8 +43,10 @@ private:
 
 void DynProg::dpIteration(int i, int j, const DistConfig& conf) {
 	int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
+	/*int z = std::min(
+			std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty), sub);*/
 	int z = std::min(
-			std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty), sub);
+			std::min(dr[ { i - 1, j }].l + conf.deletion_penalty, dr[ { i, j - 1 }].u + conf.insertion_penalty), sub);
 	dr[ { i, j }].u = z - dr[ { i - 1, j }].l;
 	dr[ { i, j }].l = z - dr[ { i, j - 1 }].u;
 }
@@ -150,7 +152,7 @@ void DynProg::updateDrColwise(const DistConfig& conf) {
 
 			int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
 			int z = std::min(
-					std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty),
+					std::min(dr[ { i - 1, j }].l + conf.deletion_penalty, dr[ { i, j - 1 }].u + conf.insertion_penalty),
 					sub);
 			//std::cout << "L[" << i-1 << "," << j << "] = " << dr[{i-1,j}].l << "\n";
 			//std::cout << "U[" << i << "," << j-1 << "] = " << dr[{i,j-1}].u << "\n";
@@ -202,7 +204,7 @@ void DynProg::updateDrRowwise(const DistConfig& conf) {
 
 			int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
 			int z = std::min(
-					std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty),
+					std::min(dr[ { i - 1, j }].l + conf.deletion_penalty, dr[ { i, j - 1 }].u + conf.insertion_penalty),
 					sub);
 			int newU = z - dr[ { i - 1, j }].l;
 			int newL = z - dr[ { i, j - 1 }].u;

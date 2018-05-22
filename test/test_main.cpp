@@ -117,10 +117,10 @@ int classicalEditDist(const std::string& s1, const std::string& s2, const DistCo
 	}
 	// initialize it
 	for (size_t i = 0; i < nrows; ++i) {
-		matrix[i][0] = i;
+		matrix[i][0] = i * config.deletion_penalty;
 	}
 	for (size_t j = 0; j < ncols; ++j) {
-		matrix[0][j] = j;
+		matrix[0][j] = j * config.insertion_penalty;
 	}
 	// fill it
 	for (size_t i = 1; i < nrows; ++i) {
@@ -301,6 +301,15 @@ TEST(DynProg, random) {
 	}
 }
 
+TEST(DynProg, weightedDebug) {
+	DistConfig config(1, 2, 3);
+	DynProg dpTest("CA", "T", config);
+	dpTest.printLMatrix();
+	dpTest.printUMatrix();
+	dpTest.editDistance(config);
+	EXPECT_EQ(dpTest.editDistance(config), classicalEditDist("CA", "T", config));
+}
+
 TEST(DynProg, randomWeighted) {
 	DistConfig config(1, 2, 3);
 	std::string s1 = "";
@@ -312,24 +321,34 @@ TEST(DynProg, randomWeighted) {
 	std::cout << "s1: " << s1 << "\n";
 	std::cout << "s2: " << s2 << "\n";
 	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+	if (dp.editDistance(config) != classicalEditDist(s1, s2, config)) {
+		return;
+	}
 	for (size_t i = 0; i < 200; ++i) {
 		int rand = dist4(rng);
 		if (rand == 0) {
+			std::cout << "right add\n";
 			s1 = s1 + randomNuc();
 			dp.addCharARight(s1[s1.size() - 1], config);
 		} else if (rand == 1) {
+			std::cout << "right add\n";
 			s2 = s2 + randomNuc();
 			dp.addCharBRight(s2[s2.size() - 1], config);
 		} else if (rand == 2) {
+			std::cout << "left add\n";
 			s1 = randomDNA(1) + s1;
 			dp.addCharALeft(s1[0], config);
 		} else {
+			std::cout << "left add\n";
 			s2 = randomDNA(1) + s2;
 			dp.addCharBLeft(s2[0], config);
 		}
 		std::cout << "s1: " << s1 << "\n";
 		std::cout << "s2: " << s2 << "\n";
 		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+		if (dp.editDistance(config) != classicalEditDist(s1, s2, config)) {
+			break;
+		}
 	}
 }
 
