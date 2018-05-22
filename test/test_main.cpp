@@ -106,8 +106,7 @@ std::string randomDNA(size_t length) {
 	return dna;
 }
 
-int classicalEditDist(const std::string& s1, const std::string& s2,
-		const DistConfig& config) {
+int classicalEditDist(const std::string& s1, const std::string& s2, const DistConfig& config) {
 	// create a DP table
 	size_t nrows = s1.size() + 1;
 	size_t ncols = s2.size() + 1;
@@ -126,11 +125,9 @@ int classicalEditDist(const std::string& s1, const std::string& s2,
 	// fill it
 	for (size_t i = 1; i < nrows; ++i) {
 		for (size_t j = 1; j < ncols; ++j) {
-			int score =
-					(s1[i - 1] == s2[j - 1]) ? 0 : config.substitution_penalty;
+			int score = (s1[i - 1] == s2[j - 1]) ? 0 : config.substitution_penalty;
 			matrix[i][j] = std::min(matrix[i - 1][j - 1] + score,
-					std::min(matrix[i - 1][j] + config.deletion_penalty,
-							matrix[i][j - 1] + config.insertion_penalty));
+					std::min(matrix[i - 1][j] + config.deletion_penalty, matrix[i][j - 1] + config.insertion_penalty));
 		}
 	}
 	return matrix[nrows - 1][ncols - 1];
@@ -253,12 +250,12 @@ TEST(DynProg, twoSidedAdd) {
 	dp.addCharALeft('C', config);
 	dp.printLMatrix();
 	dp.printUMatrix();
-	s2 = "C" + s2;
-	dp.addCharBLeft('C', config);
+	s1 = "T" + s1;
+	dp.addCharALeft('T', config);
 	dp.printLMatrix();
 	dp.printUMatrix();
-	s1 = s1 + "C";
-	dp.addCharARight('C', config);
+	s2 = s2 + "T";
+	dp.addCharBRight('T', config);
 	dp.printLMatrix();
 	dp.printUMatrix();
 	EXPECT_EQ(dp.editDistance(config), 1);
@@ -304,7 +301,7 @@ TEST(DynProg, random) {
 	}
 }
 
-TEST(DynProg, DISABLED_randomWeighted) {
+TEST(DynProg, randomWeighted) {
 	DistConfig config(1, 2, 3);
 	std::string s1 = "";
 	std::string s2 = "";

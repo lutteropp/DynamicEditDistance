@@ -42,7 +42,7 @@ private:
 };
 
 void DynProg::dpIteration(int i, int j, const DistConfig& conf) {
-	int sub = (a[i - 1] == b[j - 1] ? 0 : conf.substitution_penalty);
+	int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
 	int z = std::min(
 			std::min(dr[ { i - 1, j }].l + conf.insertion_penalty, dr[ { i, j - 1 }].u + conf.deletion_penalty), sub);
 	dr[ { i, j }].u = z - dr[ { i - 1, j }].l;
