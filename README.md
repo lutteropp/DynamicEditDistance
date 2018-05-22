@@ -1,4 +1,4 @@
-# DynamicPairwiseAlignmentExtension
+# DynamicEditDistance
 
 Implementation of a dynamic edit distance matrix which dynamically keeps track of the edit distance of two strings, allowing the following operations with linear update time:
 - inserting a character to the beginning of a string
