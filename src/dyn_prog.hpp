@@ -100,7 +100,7 @@ int DynProg::editDistance(const DistConfig& conf) {
 void DynProg::addCharARight(char c, const DistConfig& conf) {
 	a += c;
 	dr.setMaxRowIdx(dr.getMaxRowIdx() + 1);
-	dr[ { dr.getMaxRowIdx(), 0 }].u = conf.deletion_penalty;
+	dr[ { dr.getMaxRowIdx(), dr.getMinColIdx() }].u = conf.deletion_penalty;
 	for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
 		dpIteration(dr.getMaxRowIdx(), j, conf);
 	}
