@@ -25,7 +25,7 @@ public:
 		maxRowIdx = -1;
 		maxColIdx = -1;
 	}
-	T& operator [](std::array<int, 2> idx) {
+	T& operator [](const std::array<int, 2>& idx) {
 		int i = idx[0];
 		int j = idx[1];
 		return rows[i - minRowIdx][j - minColIdx];
