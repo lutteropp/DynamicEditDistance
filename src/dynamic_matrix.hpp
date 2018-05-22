@@ -16,32 +16,74 @@
 // this matrix only grows, but never shrinks!
 
 template<typename T>
+class MatrixRow {
+public:
+	MatrixRow() {
+		minColIdx = 0;
+		maxColIdx = -1;
+	}
+	T& operator[](int idx) {
+		if (idx >= 0) {
+			return positiveColumns[idx];
+		} else {
+			return negativeColumns[-idx - 1];
+		}
+	}
+	int getMinColIdx() {
+		return minColIdx;
+	}
+	int getMaxColIdx() {
+		return maxColIdx;
+	}
+	void setMinColIdx(int val) {
+		negativeColumns.resize(-val);
+		minColIdx = val;
+	}
+	void setMaxColIdx(int val) {
+		positiveColumns.resize(val + 1);
+		maxColIdx = val;
+	}
+private:
+	std::vector<T> positiveColumns;
+	std::vector<T> negativeColumns;
+	int minColIdx;
+	int maxColIdx;
+};
+
+template<typename T>
 class DynamicMatrix {
 public:
 	DynamicMatrix() {
-		nrows = 0;
-		ncols = 0;
 		minRowIdx = 0;
 		minColIdx = 0;
 		maxRowIdx = -1;
 		maxColIdx = -1;
 	}
 
-	T& operator [](const std::pair<int,int>& idx) {
-		int i = idx.first;
-		int j = idx.second;
-		return rows[i - minRowIdx][j - minColIdx];
+	MatrixRow<T>& operator [](int idx) {
+		if (idx >= 0) {
+			return positiveRows[idx];
+		} else {
+			return negativeRows[-idx - 1];
+		}
 	}
+
 	int getNRows() {
-		return nrows;
+		return (maxRowIdx + 1) + (-minRowIdx);
 	}
 	int getNCols() {
-		return ncols;
+		return (maxColIdx + 1) + (-minColIdx);
 	}
 	void printMatrix() {
-		for (int i = 0; i < nrows; ++i) {
-			for (int j = 0; j < ncols; ++j) {
-				std::cout << rows[i][j] << " ";
+		for (size_t i = 0; i < negativeRows.size(); ++i) {
+			for (int j = minColIdx; j <= maxColIdx; ++j) {
+				std::cout << negativeRows[i][j] << " ";
+			}
+			std::cout << "\n";
+		}
+		for (size_t i = 0; i < positiveRows.size(); ++i) {
+			for (int j = minColIdx; j <= maxColIdx; ++j) {
+				std::cout << positiveRows[i][j] << " ";
 			}
 			std::cout << "\n";
 		}
@@ -58,46 +100,48 @@ public:
 	int getMaxColIdx() {
 		return maxColIdx;
 	}
+
 	void setMinRowIdx(int val) {
-		while (val < minRowIdx) {
-			std::deque<T> newRow(ncols);
-			rows.push_front(newRow);
-			nrows++;
-			minRowIdx--;
+		negativeRows.resize(-val);
+		for (size_t i = 0; i < negativeRows.size(); ++i) {
+			negativeRows[i].setMinColIdx(minColIdx);
+			negativeRows[i].setMaxColIdx(maxColIdx);
 		}
-	}
-	void setMinColIdx(int val) {
-		while (val < minColIdx) {
-			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry;
-				rows[i1].push_front(newEntry);
-			}
-			ncols++;
-			minColIdx--;
-		}
+		minRowIdx = val;
 	}
 	void setMaxRowIdx(int val) {
-		while (val > maxRowIdx) {
-			std::deque<T> newRow(ncols);
-			rows.push_back(newRow);
-			nrows++;
-			maxRowIdx++;
+		positiveRows.resize(val + 1);
+		for (size_t i = 0; i < positiveRows.size(); ++i) {
+			positiveRows[i].setMinColIdx(minColIdx);
+			positiveRows[i].setMaxColIdx(maxColIdx);
 		}
+		maxRowIdx = val;
 	}
+
+	void setMinColIdx(int val) {
+		for (size_t i = 0; i < positiveRows.size(); ++i) {
+			positiveRows[i].setMinColIdx(val);
+		}
+		for (size_t i = 0; i < negativeRows.size(); ++i) {
+			negativeRows[i].setMinColIdx(val);
+		}
+		minColIdx = val;
+	}
+
 	void setMaxColIdx(int val) {
-		while (val > maxColIdx) {
-			for (int i1 = 0; i1 < nrows; ++i1) {
-				T newEntry;
-				rows[i1].push_back(newEntry);
-			}
-			ncols++;
-			maxColIdx++;
+		for (size_t i = 0; i < positiveRows.size(); ++i) {
+			positiveRows[i].setMaxColIdx(val);
 		}
+		for (size_t i = 0; i < negativeRows.size(); ++i) {
+			negativeRows[i].setMaxColIdx(val);
+		}
+		maxColIdx = val;
 	}
+
 private:
-	std::deque<std::deque<T> > rows;
-	int nrows;
-	int ncols;
+	std::vector<MatrixRow<T> > positiveRows;
+	std::vector<MatrixRow<T> > negativeRows;
+
 	int minRowIdx;
 	int minColIdx;
 	int maxColIdx;

@@ -23,32 +23,32 @@ TEST(DynamicMatrix, addingColumnRight) {
 	mat.setMaxColIdx(2);
 	mat.setMinRowIdx(0);
 	mat.setMaxRowIdx(2);
-	mat[ { 0, 0 }] = 1;
-	mat[ { 0, 1 }] = 2;
-	mat[ { 0, 2 }] = 3;
-	mat[ { 1, 0 }] = 4;
-	mat[ { 1, 1 }] = 5;
-	mat[ { 1, 2 }] = 6;
-	EXPECT_TRUE((mat[ { 0, 0 }] == 1));
-	EXPECT_TRUE((mat[ { 0, 1 }] == 2));
-	EXPECT_TRUE((mat[ { 0, 2 }] == 3));
-	EXPECT_TRUE((mat[ { 1, 0 }] == 4));
-	EXPECT_TRUE((mat[ { 1, 1 }] == 5));
-	EXPECT_TRUE((mat[ { 1, 2 }] == 6));
+	mat[0][0] = 1;
+	mat[0][1] = 2;
+	mat[0][2] = 3;
+	mat[1][0] = 4;
+	mat[1][1] = 5;
+	mat[1][2] = 6;
+	EXPECT_TRUE((mat[0][0] == 1));
+	EXPECT_TRUE((mat[0][1] == 2));
+	EXPECT_TRUE((mat[0][2] == 3));
+	EXPECT_TRUE((mat[1][0] == 4));
+	EXPECT_TRUE((mat[1][1] == 5));
+	EXPECT_TRUE((mat[1][2] == 6));
 	// 1 2 3 7
 	// 4 5 6 8
 	mat.setMaxColIdx(3);
 	mat.setMaxRowIdx(3);
-	mat[ { 0, 3 }] = 7;
-	mat[ { 1, 3 }] = 8;
-	EXPECT_TRUE((mat[ { 0, 0 }] == 1));
-	EXPECT_TRUE((mat[ { 0, 1 }] == 2));
-	EXPECT_TRUE((mat[ { 0, 2 }] == 3));
-	EXPECT_TRUE((mat[ { 1, 0 }] == 4));
-	EXPECT_TRUE((mat[ { 1, 1 }] == 5));
-	EXPECT_TRUE((mat[ { 1, 2 }] == 6));
-	EXPECT_TRUE((mat[ { 0, 3 }] == 7));
-	EXPECT_TRUE((mat[ { 1, 3 }] == 8));
+	mat[0][3] = 7;
+	mat[1][3] = 8;
+	EXPECT_TRUE((mat[0][0] == 1));
+	EXPECT_TRUE((mat[0][1] == 2));
+	EXPECT_TRUE((mat[0][2] == 3));
+	EXPECT_TRUE((mat[1][0] == 4));
+	EXPECT_TRUE((mat[1][1] == 5));
+	EXPECT_TRUE((mat[1][2] == 6));
+	EXPECT_TRUE((mat[0][3] == 7));
+	EXPECT_TRUE((mat[1][3] == 8));
 }
 
 TEST(DynamicMatrix, addingColumnLeft) {
@@ -59,35 +59,37 @@ TEST(DynamicMatrix, addingColumnLeft) {
 	mat.setMaxColIdx(2);
 	mat.setMinRowIdx(0);
 	mat.setMaxRowIdx(2);
-	mat[ { 0, 0 }] = 1;
-	mat[ { 0, 1 }] = 2;
-	mat[ { 0, 2 }] = 3;
-	mat[ { 1, 0 }] = 4;
-	mat[ { 1, 1 }] = 5;
-	mat[ { 1, 2 }] = 6;
+	mat[0][0] = 1;
+	mat[0][1] = 2;
+	mat[0][2] = 3;
+	mat[1][0] = 4;
+	mat[1][1] = 5;
+	mat[1][2] = 6;
 	mat.printMatrix();
-	EXPECT_TRUE((mat[ { 0, 0 }] == 1));
-	EXPECT_TRUE((mat[ { 0, 1 }] == 2));
-	EXPECT_TRUE((mat[ { 0, 2 }] == 3));
-	EXPECT_TRUE((mat[ { 1, 0 }] == 4));
-	EXPECT_TRUE((mat[ { 1, 1 }] == 5));
-	EXPECT_TRUE((mat[ { 1, 2 }] == 6));
+	EXPECT_TRUE((mat[0][0] == 1));
+	EXPECT_TRUE((mat[0][1] == 2));
+	EXPECT_TRUE((mat[0][2] == 3));
+	EXPECT_TRUE((mat[1][0] == 4));
+	EXPECT_TRUE((mat[1][1] == 5));
+	EXPECT_TRUE((mat[1][2] == 6));
 	// 7 1 2 3
 	// 8 4 5 6
 	mat.setMinColIdx(-1);
 	mat.setMinRowIdx(-1);
-	mat[ { 0, -1 }] = 7;
-	mat[ { 1, -1 }] = 8;
+	mat[0][-1] = 7;
+	mat[1][-1] = 8;
 	mat.printMatrix();
+	std::cout << "minColIdx: " << mat.getMinColIdx() << "\n";
+	std::cout << "maxColIdx: " << mat.getMaxColIdx() << "\n";
 	EXPECT_EQ(mat.getNCols(), 4);
-	EXPECT_TRUE((mat[ { 0, 0 }] == 1));
-	EXPECT_TRUE((mat[ { 0, 1 }] == 2));
-	EXPECT_TRUE((mat[ { 0, 2 }] == 3));
-	EXPECT_TRUE((mat[ { 1, 0 }] == 4));
-	EXPECT_TRUE((mat[ { 1, 1 }] == 5));
-	EXPECT_TRUE((mat[ { 1, 2 }] == 6));
-	EXPECT_TRUE((mat[ { 0, -1 }] == 7));
-	EXPECT_TRUE((mat[ { 1, -1 }] == 8));
+	EXPECT_TRUE((mat[0][0] == 1));
+	EXPECT_TRUE((mat[0][1] == 2));
+	EXPECT_TRUE((mat[0][2] == 3));
+	EXPECT_TRUE((mat[1][0] == 4));
+	EXPECT_TRUE((mat[1][1] == 5));
+	EXPECT_TRUE((mat[1][2] == 6));
+	EXPECT_TRUE((mat[0][-1] == 7));
+	EXPECT_TRUE((mat[1][-1] == 8));
 }
 
 char randomNuc() {
