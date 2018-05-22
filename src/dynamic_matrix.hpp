@@ -10,6 +10,7 @@
 #include <deque>
 #include <array>
 #include <iostream>
+#include <utility>
 
 // this allows both positive and negative indices
 // this matrix only grows, but never shrinks!
@@ -25,9 +26,10 @@ public:
 		maxRowIdx = -1;
 		maxColIdx = -1;
 	}
-	T& operator [](const std::array<int, 2>& idx) {
-		int i = idx[0];
-		int j = idx[1];
+
+	T& operator [](const std::pair<int,int>& idx) {
+		int i = idx.first;
+		int j = idx.second;
 		return rows[i - minRowIdx][j - minColIdx];
 	}
 	int getNRows() {
