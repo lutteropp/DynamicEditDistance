@@ -20,6 +20,7 @@ class DynProg {
 public:
 	DynProg(const std::string& a, const std::string& b, const DistConfig& conf);
 	int editDistance(const DistConfig& conf);
+	double normalizedEditDistance(const DistConfig& conf);
 	void addCharARight(char c, const DistConfig& conf);
 	void addCharBRight(char c, const DistConfig& conf);
 	void addCharALeft(char c, const DistConfig& conf);
@@ -284,4 +285,10 @@ void DynProg::printLMatrix() {
 		std::cout << "\n";
 	}
 	std::cout << "L matrix end.\n";
+}
+
+double DynProg::normalizedEditDistance(const DistConfig& conf) {
+	int dist = editDistance(conf);
+	int alpha = std::max(conf.insertion_penalty, conf.deletion_penalty);
+	return (2.0 * dist) / (alpha * (a.size() + b.size()) + dist);
 }
