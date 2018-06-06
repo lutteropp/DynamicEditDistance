@@ -140,7 +140,7 @@ TEST(DynProg, singleEqual) {
 	std::string s1 = "A";
 	std::string s2 = "A";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 }
 
 TEST(DynProg, twoEqual) {
@@ -148,7 +148,7 @@ TEST(DynProg, twoEqual) {
 	std::string s1 = "AG";
 	std::string s2 = "AG";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 }
 
 TEST(DynProg, singleDifferent) {
@@ -156,7 +156,7 @@ TEST(DynProg, singleDifferent) {
 	std::string s1 = "A";
 	std::string s2 = "G";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 }
 
 TEST(DynProg, twoDifferent) {
@@ -164,7 +164,7 @@ TEST(DynProg, twoDifferent) {
 	std::string s1 = "AG";
 	std::string s2 = "TC";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 2);
+	EXPECT_EQ(dp.editDistance(), 2);
 }
 
 TEST(DynProg, oneEqOneDiff) {
@@ -172,7 +172,7 @@ TEST(DynProg, oneEqOneDiff) {
 	std::string s1 = "AG";
 	std::string s2 = "TG";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 }
 
 TEST(DynProg, singleLeftAddEqual) {
@@ -180,17 +180,17 @@ TEST(DynProg, singleLeftAddEqual) {
 	std::string s1 = "";
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 	s1 = "A" + s1;
-	dp.addCharALeft('A', config);
+	dp.addCharALeft('A');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 	s2 = "A" + s2;
-	dp.addCharBLeft('A', config);
+	dp.addCharBLeft('A');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 }
 
 TEST(DynProg, singleLeftAddDifferent) {
@@ -198,15 +198,15 @@ TEST(DynProg, singleLeftAddDifferent) {
 	std::string s1 = "";
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 	s1 = "A" + s1;
-	dp.addCharALeft('A', config);
-	EXPECT_EQ(dp.editDistance(config), 1);
+	dp.addCharALeft('A');
+	EXPECT_EQ(dp.editDistance(), 1);
 	s2 = "G" + s2;
-	dp.addCharBLeft('G', config);
+	dp.addCharBLeft('G');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 }
 
 TEST(DynProg, problem) {
@@ -216,31 +216,31 @@ TEST(DynProg, problem) {
 	DynProg dp(s1, s2, config);
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 0);
+	EXPECT_EQ(dp.editDistance(), 0);
 	// C, -
 	s1 = "C" + s1;
-	dp.addCharALeft('C', config);
+	dp.addCharALeft('C');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 	// GC, -
 	s1 = "G" + s1;
-	dp.addCharALeft('G', config);
+	dp.addCharALeft('G');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 2);
+	EXPECT_EQ(dp.editDistance(), 2);
 	// AGC, -
 	s1 = "A" + s1;
-	dp.addCharALeft('A', config);
+	dp.addCharALeft('A');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 3);
+	EXPECT_EQ(dp.editDistance(), 3);
 	// AGC, C
 	s2 = "C" + s2;
-	dp.addCharBLeft('C', config);
+	dp.addCharBLeft('C');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 2);
+	EXPECT_EQ(dp.editDistance(), 2);
 }
 
 TEST(DynProg, twoSidedAdd) {
@@ -249,18 +249,18 @@ TEST(DynProg, twoSidedAdd) {
 	std::string s2 = "";
 	DynProg dp(s1, s2, config);
 	s1 = "C" + s1;
-	dp.addCharALeft('C', config);
+	dp.addCharALeft('C');
 	dp.printLMatrix();
 	dp.printUMatrix();
 	s1 = "T" + s1;
-	dp.addCharALeft('T', config);
+	dp.addCharALeft('T');
 	dp.printLMatrix();
 	dp.printUMatrix();
 	s2 = s2 + "T";
-	dp.addCharBRight('T', config);
+	dp.addCharBRight('T');
 	dp.printLMatrix();
 	dp.printUMatrix();
-	EXPECT_EQ(dp.editDistance(config), 1);
+	EXPECT_EQ(dp.editDistance(), 1);
 }
 
 TEST(DynProg, random) {
@@ -273,31 +273,31 @@ TEST(DynProg, random) {
 	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
 	std::cout << "s1: " << s1 << "\n";
 	std::cout << "s2: " << s2 << "\n";
-	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+	EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
 	for (size_t i = 0; i < 200; ++i) {
 		int rand = dist4(rng);
 		if (rand == 0) {
 			std::cout << "right add\n";
 			s1 = s1 + randomNuc();
-			dp.addCharARight(s1[s1.size() - 1], config);
+			dp.addCharARight(s1[s1.size() - 1]);
 		} else if (rand == 1) {
 			std::cout << "right add\n";
 			s2 = s2 + randomNuc();
-			dp.addCharBRight(s2[s2.size() - 1], config);
+			dp.addCharBRight(s2[s2.size() - 1]);
 		} else if (rand == 2) {
 			std::cout << "left add\n";
 			s1 = randomDNA(1) + s1;
-			dp.addCharALeft(s1[0], config);
+			dp.addCharALeft(s1[0]);
 		} else {
 			std::cout << "left add\n";
 			s2 = randomDNA(1) + s2;
-			dp.addCharBLeft(s2[0], config);
+			dp.addCharBLeft(s2[0]);
 		}
 		std::cout << "s1: " << s1 << "\n";
 		std::cout << "s2: " << s2 << "\n";
-		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
+		EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
 
-		if (dp.editDistance(config) != classicalEditDist(s1, s2, config)) {
+		if (dp.editDistance() != classicalEditDist(s1, s2, config)) {
 			break;
 		}
 	}
@@ -308,8 +308,8 @@ TEST(DynProg, weightedDebug) {
 	DynProg dpTest("CA", "T", config);
 	dpTest.printLMatrix();
 	dpTest.printUMatrix();
-	dpTest.editDistance(config);
-	EXPECT_EQ(dpTest.editDistance(config), classicalEditDist("CA", "T", config));
+	dpTest.editDistance();
+	EXPECT_EQ(dpTest.editDistance(), classicalEditDist("CA", "T", config));
 }
 
 TEST(DynProg, randomWeighted) {
@@ -322,8 +322,8 @@ TEST(DynProg, randomWeighted) {
 	std::uniform_int_distribution<std::mt19937::result_type> dist4(0, 3);
 	std::cout << "s1: " << s1 << "\n";
 	std::cout << "s2: " << s2 << "\n";
-	EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
-	if (dp.editDistance(config) != classicalEditDist(s1, s2, config)) {
+	EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
+	if (dp.editDistance() != classicalEditDist(s1, s2, config)) {
 		return;
 	}
 	for (size_t i = 0; i < 200; ++i) {
@@ -331,24 +331,24 @@ TEST(DynProg, randomWeighted) {
 		if (rand == 0) {
 			std::cout << "right add\n";
 			s1 = s1 + randomNuc();
-			dp.addCharARight(s1[s1.size() - 1], config);
+			dp.addCharARight(s1[s1.size() - 1]);
 		} else if (rand == 1) {
 			std::cout << "right add\n";
 			s2 = s2 + randomNuc();
-			dp.addCharBRight(s2[s2.size() - 1], config);
+			dp.addCharBRight(s2[s2.size() - 1]);
 		} else if (rand == 2) {
 			std::cout << "left add\n";
 			s1 = randomDNA(1) + s1;
-			dp.addCharALeft(s1[0], config);
+			dp.addCharALeft(s1[0]);
 		} else {
 			std::cout << "left add\n";
 			s2 = randomDNA(1) + s2;
-			dp.addCharBLeft(s2[0], config);
+			dp.addCharBLeft(s2[0]);
 		}
 		std::cout << "s1: " << s1 << "\n";
 		std::cout << "s2: " << s2 << "\n";
-		EXPECT_EQ(dp.editDistance(config), classicalEditDist(s1, s2, config));
-		if (dp.editDistance(config) != classicalEditDist(s1, s2, config)) {
+		EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
+		if (dp.editDistance() != classicalEditDist(s1, s2, config)) {
 			break;
 		}
 	}

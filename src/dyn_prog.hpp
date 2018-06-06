@@ -19,12 +19,12 @@
 class DynProg {
 public:
 	DynProg(const std::string& a, const std::string& b, const DistConfig& conf);
-	int editDistance(const DistConfig& conf);
-	double normalizedEditDistance(const DistConfig& conf);
-	void addCharARight(char c, const DistConfig& conf);
-	void addCharBRight(char c, const DistConfig& conf);
-	void addCharALeft(char c, const DistConfig& conf);
-	void addCharBLeft(char c, const DistConfig& conf);
+	int editDistance();
+	double normalizedEditDistance();
+	void addCharARight(char c);
+	void addCharBRight(char c);
+	void addCharALeft(char c);
+	void addCharBLeft(char c);
 	/*void removeCharARight();
 	 void removeCharBRight();
 	 void removeCharALeft(const DistConfig& conf);
@@ -34,15 +34,16 @@ public:
 	void printUMatrix();
 	void printLMatrix();
 private:
-	void dpIteration(int i, int j, const DistConfig& conf);
-	void updateDrColwise(const DistConfig& conf);
-	void updateDrRowwise(const DistConfig& conf);
+	void dpIteration(int i, int j);
+	void updateDrColwise();
+	void updateDrRowwise();
 	DynamicMatrix<MatrixEntry> dr;
 	std::string a;
 	std::string b;
+	DistConfig conf;
 };
 
-void DynProg::dpIteration(int i, int j, const DistConfig& conf) {
+void DynProg::dpIteration(int i, int j) {
 	int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
 	int z = std::min(std::min(dr[i - 1][j].l + conf.deletion_penalty, dr[i][j - 1].u + conf.insertion_penalty), sub);
 	dr[i][j].u = z - dr[i - 1][j].l;
@@ -53,6 +54,7 @@ DynProg::DynProg(const std::string& a, const std::string& b, const DistConfig& c
 	// compute the initial delta values...
 	this->a = a;
 	this->b = b;
+	this->conf = conf;
 	dr.setMinRowIdx(0);
 	dr.setMinColIdx(0);
 	dr.setMaxRowIdx(a.size());
@@ -65,12 +67,12 @@ DynProg::DynProg(const std::string& a, const std::string& b, const DistConfig& c
 	}
 	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
 		for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
-			dpIteration(i, j, conf);
+			dpIteration(i, j);
 		}
 	}
 }
 
-int DynProg::editDistance(const DistConfig& conf) {
+int DynProg::editDistance() {
 	// corner case: one of the strings is empty
 	if (a.size() == 0 && b.size() == 0) {
 		return 0;
@@ -97,21 +99,21 @@ int DynProg::editDistance(const DistConfig& conf) {
 	return e;
 }
 
-void DynProg::addCharARight(char c, const DistConfig& conf) {
+void DynProg::addCharARight(char c) {
 	a += c;
 	dr.setMaxRowIdx(dr.getMaxRowIdx() + 1);
 	dr[dr.getMaxRowIdx()][dr.getMinColIdx()].u = conf.deletion_penalty;
 	for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
-		dpIteration(dr.getMaxRowIdx(), j, conf);
+		dpIteration(dr.getMaxRowIdx(), j);
 	}
 }
 
-void DynProg::addCharBRight(char c, const DistConfig& conf) {
+void DynProg::addCharBRight(char c) {
 	b += c;
 	dr.setMaxColIdx(dr.getMaxColIdx() + 1);
 	dr[dr.getMinRowIdx()][dr.getMaxColIdx()].l = conf.insertion_penalty;
 	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
-		dpIteration(i, dr.getMaxColIdx(), conf);
+		dpIteration(i, dr.getMaxColIdx());
 	}
 }
 
@@ -123,7 +125,7 @@ const std::string& DynProg::getB() {
 	return b;
 }
 
-void DynProg::updateDrColwise(const DistConfig& conf) {
+void DynProg::updateDrColwise() {
 	std::deque<int> prevChanged;
 	// new first column now
 	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
@@ -172,7 +174,7 @@ void DynProg::updateDrColwise(const DistConfig& conf) {
 	}
 }
 
-void DynProg::updateDrRowwise(const DistConfig& conf) {
+void DynProg::updateDrRowwise() {
 	std::deque<int> prevChanged;
 	// new first row now
 	for (int j = 1 + dr.getMinColIdx(); j <= dr.getMaxColIdx(); ++j) {
@@ -222,20 +224,20 @@ void DynProg::updateDrRowwise(const DistConfig& conf) {
 	}
 }
 
-void DynProg::addCharALeft(char c, const DistConfig& conf) {
+void DynProg::addCharALeft(char c) {
 	std::string aNew = "";
 	aNew += c;
 	a = aNew + a;
 	dr.setMinRowIdx(dr.getMinRowIdx() - 1);
-	updateDrRowwise(conf);
+	updateDrRowwise();
 }
 
-void DynProg::addCharBLeft(char c, const DistConfig& conf) {
+void DynProg::addCharBLeft(char c) {
 	std::string bNew = "";
 	bNew += c;
 	b = bNew + b;
 	dr.setMinColIdx(dr.getMinColIdx() - 1);
-	updateDrColwise(conf);
+	updateDrColwise();
 }
 
 /*void DynProg::removeCharARight() {
@@ -248,16 +250,16 @@ void DynProg::addCharBLeft(char c, const DistConfig& conf) {
  dr.setMaxColIdx(dr.getMaxColIdx() - 1);
  }
 
- void DynProg::removeCharALeft(const DistConfig& conf) {
+ void DynProg::removeCharALeft() {
  a = a.substr(1, a.size() - 1);
  dr.setMinRowIdx(dr.getMinRowIdx() + 1);
- updateDrRowwise(conf);
+ updateDrRowwise();
  }
 
- void DynProg::removeCharBLeft(const DistConfig& conf) {
+ void DynProg::removeCharBLeft() {
  b = b.substr(1, b.size() - 1);
  dr.setMinColIdx(dr.getMinColIdx() + 1);
- updateDrColwise(conf);
+ updateDrColwise();
  }*/
 
 void DynProg::printUMatrix() {
@@ -282,8 +284,8 @@ void DynProg::printLMatrix() {
 	std::cout << "L matrix end.\n";
 }
 
-double DynProg::normalizedEditDistance(const DistConfig& conf) {
-	int dist = editDistance(conf);
+double DynProg::normalizedEditDistance() {
+	int dist = editDistance();
 	int alpha = std::max(conf.insertion_penalty, conf.deletion_penalty);
 	return (2.0 * dist) / (alpha * (a.size() + b.size()) + dist);
 }
