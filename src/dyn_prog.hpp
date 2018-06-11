@@ -37,8 +37,13 @@ private:
 	void dpIteration(int i, int j);
 	void updateDrColwise();
 	void updateDrRowwise();
+	double normalizedEditDistance(int dist);
 	DynamicMatrix<MatrixEntry> dr;
 	std::string a;
 	std::string b;
 	DistConfig conf;
+
+	double normEditDist_;
+	int editDist_;
+	bool distValid_;
 };

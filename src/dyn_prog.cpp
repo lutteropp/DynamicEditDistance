@@ -34,32 +34,41 @@ DynProg::DynProg(const std::string& a, const std::string& b, const DistConfig& c
 			dpIteration(i, j);
 		}
 	}
+	distValid_ = false;
+	editDist_ = -1;
+	normEditDist_ = -1;
 }
 
 int DynProg::editDistance() {
-	// corner case: one of the strings is empty
-	if (a.size() == 0 && b.size() == 0) {
-		return 0;
-	}
-	if (a.size() == 0 && b.size() > 0) {
-		return b.size() * conf.insertion_penalty;
-	}
-	if (a.size() > 0 && b.size() == 0) {
-		return a.size() * conf.deletion_penalty;
+	if (distValid_) {
+		return editDist_;
 	}
 
-	int e = 0;
-	if (dr.getNRows() <= dr.getNCols()) { // iterate over i in D[i,n]
-		e = (dr.getNCols() - 1) * conf.insertion_penalty;
-		for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
-			e += dr[i][dr.getMaxColIdx()].u;
-		}
-	} else { // iterate over j in D[m,j]
-		e = (dr.getNRows() - 1) * conf.deletion_penalty;
-		for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
-			e += dr[dr.getMaxRowIdx()][j].l;
+	int e;
+	// corner case: one of the strings is empty
+	if (a.size() == 0 && b.size() == 0) {
+		e = 0;
+	} else if (a.size() == 0 && b.size() > 0) {
+		e = b.size() * conf.insertion_penalty;
+	} else if (a.size() > 0 && b.size() == 0) {
+		e = a.size() * conf.deletion_penalty;
+	} else {
+		e = 0;
+		if (dr.getNRows() <= dr.getNCols()) { // iterate over i in D[i,n]
+			e = (dr.getNCols() - 1) * conf.insertion_penalty;
+			for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
+				e += dr[i][dr.getMaxColIdx()].u;
+			}
+		} else { // iterate over j in D[m,j]
+			e = (dr.getNRows() - 1) * conf.deletion_penalty;
+			for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
+				e += dr[dr.getMaxRowIdx()][j].l;
+			}
 		}
 	}
+	editDist_ = e;
+	normEditDist_ = normalizedEditDistance(e);
+	distValid_ = true;
 	return e;
 }
 
@@ -70,6 +79,7 @@ void DynProg::addCharARight(char c) {
 	for (int j = dr.getMinColIdx() + 1; j <= dr.getMaxColIdx(); ++j) {
 		dpIteration(dr.getMaxRowIdx(), j);
 	}
+	distValid_ = false;
 }
 
 void DynProg::addCharBRight(char c) {
@@ -79,6 +89,7 @@ void DynProg::addCharBRight(char c) {
 	for (int i = dr.getMinRowIdx() + 1; i <= dr.getMaxRowIdx(); ++i) {
 		dpIteration(i, dr.getMaxColIdx());
 	}
+	distValid_ = false;
 }
 
 const std::string& DynProg::getA() {
@@ -115,11 +126,10 @@ void DynProg::updateDrColwise() {
 			int oldL = dr[i][j].l;
 
 			int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
-			int z = std::min(
-					std::min(dr[i-1][j].l + conf.deletion_penalty, dr[i][j-1].u + conf.insertion_penalty),
+			int z = std::min(std::min(dr[i - 1][j].l + conf.deletion_penalty, dr[i][j - 1].u + conf.insertion_penalty),
 					sub);
-			int newU = z - dr[i-1][j].l;
-			int newL = z - dr[i][j-1].u;
+			int newU = z - dr[i - 1][j].l;
+			int newL = z - dr[i][j - 1].u;
 			dr[i][j].u = newU;
 			dr[i][j].l = newL;
 			if (oldU != newU) {
@@ -165,11 +175,10 @@ void DynProg::updateDrRowwise() {
 			int oldL = dr[i][j].l;
 
 			int sub = (a[i - 1 - dr.getMinRowIdx()] == b[j - 1 - dr.getMinColIdx()] ? 0 : conf.substitution_penalty);
-			int z = std::min(
-					std::min(dr[i-1][j].l + conf.deletion_penalty, dr[i][j-1].u + conf.insertion_penalty),
+			int z = std::min(std::min(dr[i - 1][j].l + conf.deletion_penalty, dr[i][j - 1].u + conf.insertion_penalty),
 					sub);
-			int newU = z - dr[i-1][j].l;
-			int newL = z - dr[i][j-1].u;
+			int newU = z - dr[i - 1][j].l;
+			int newL = z - dr[i][j - 1].u;
 			dr[i][j].u = newU;
 			dr[i][j].l = newL;
 			if (oldL != newL) {
@@ -194,6 +203,7 @@ void DynProg::addCharALeft(char c) {
 	a = aNew + a;
 	dr.setMinRowIdx(dr.getMinRowIdx() - 1);
 	updateDrRowwise();
+	distValid_ = false;
 }
 
 void DynProg::addCharBLeft(char c) {
@@ -202,28 +212,33 @@ void DynProg::addCharBLeft(char c) {
 	b = bNew + b;
 	dr.setMinColIdx(dr.getMinColIdx() - 1);
 	updateDrColwise();
+	distValid_ = false;
 }
 
 /*void DynProg::removeCharARight() {
  a = a.substr(0, a.size() - 1);
  dr.setMaxRowIdx(dr.getMaxRowIdx() - 1);
+ distValid_ = false;
  }
 
  void DynProg::removeCharBRight() {
  b = b.substr(0, b.size() - 1);
  dr.setMaxColIdx(dr.getMaxColIdx() - 1);
+ distValid_ = false;
  }
 
  void DynProg::removeCharALeft() {
  a = a.substr(1, a.size() - 1);
  dr.setMinRowIdx(dr.getMinRowIdx() + 1);
  updateDrRowwise();
+ distValid_ = false;
  }
 
  void DynProg::removeCharBLeft() {
  b = b.substr(1, b.size() - 1);
  dr.setMinColIdx(dr.getMinColIdx() + 1);
  updateDrColwise();
+ distValid_ = false;
  }*/
 
 void DynProg::printUMatrix() {
@@ -248,8 +263,19 @@ void DynProg::printLMatrix() {
 	std::cout << "L matrix end.\n";
 }
 
-double DynProg::normalizedEditDistance() {
-	int dist = editDistance();
+double DynProg::normalizedEditDistance(int dist) {
 	int alpha = std::max(conf.insertion_penalty, conf.deletion_penalty);
 	return (2.0 * dist) / (alpha * (a.size() + b.size()) + dist);
+}
+
+double DynProg::normalizedEditDistance() {
+	if (distValid_) {
+		return normEditDist_;
+	} else {
+		editDist_ = editDistance();
+		int alpha = std::max(conf.insertion_penalty, conf.deletion_penalty);
+		normEditDist_ = (2.0 * editDist_) / (alpha * (a.size() + b.size()) + editDist_);
+		distValid_ = true;
+		return normEditDist_;
+	}
 }
