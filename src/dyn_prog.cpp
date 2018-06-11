@@ -144,7 +144,7 @@ void DynProg::updateDrColwise() {
 				}
 			}
 		}
-		prevChanged = currChanged;
+		prevChanged.swap(currChanged);
 	}
 }
 
@@ -193,7 +193,7 @@ void DynProg::updateDrRowwise() {
 				}
 			}
 		}
-		prevChanged = currChanged;
+		prevChanged.swap(currChanged);
 	}
 }
 
