@@ -354,6 +354,32 @@ TEST(DynProg, randomWeighted) {
 	}
 }
 
+TEST(DynProg, randomLeftOnly) {
+	DistConfig config;
+	std::string s1 = "";
+	std::string s2 = "";
+	DynProg dp(s1, s2, config);
+	std::mt19937 rng;
+	rng.seed(std::random_device()());
+	std::uniform_int_distribution<std::mt19937::result_type> dist2(0, 1);
+	EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
+	for (size_t i = 0; i < 500; ++i) {
+		int rand = dist2(rng);
+		if (rand == 0) {
+			s1 = randomDNA(1) + s1;
+			dp.addCharALeft(s1[0]);
+		} else {
+			s2 = randomDNA(1) + s2;
+			dp.addCharBLeft(s2[0]);
+		}
+		EXPECT_EQ(dp.editDistance(), classicalEditDist(s1, s2, config));
+
+		if (dp.editDistance() != classicalEditDist(s1, s2, config)) {
+			break;
+		}
+	}
+}
+
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
